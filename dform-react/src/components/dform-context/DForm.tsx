@@ -1,21 +1,24 @@
+import React, { memo } from "react";
+import { FC } from "react";
 import { useState, useCallback } from "react";
 import { DFormContext, IDFormContext } from "./DFormContext";
 
-const _setValue = (name: string, value: string, formValues: Record<string, any>, 
-  _setFormValues: React.Dispatch<React.SetStateAction<Record<string, any>>>) => {
-    _setFormValues({
-      ...formValues,
-      [name]: value
-    });
+interface IDForm {
+  title: string;
+  children: JSX.Element | JSX.Element[];
 }
 
-export const DForm = (props: any) => {
-  const { children } = props;
+export const DForm: FC<IDForm> = memo((props) => {
+  const { title, children } = props;
   const [formValues, _setFormValues] = useState({});
-  const setValue = useCallback(
-    (name: string, value: string) => _setValue(name, value, formValues, _setFormValues),
-    [formValues, _setFormValues]
-  );
+
+  const setValue = useCallback((name: string, value: string) => {
+      _setFormValues({
+        ...formValues,
+        [name]: value
+      });
+    }, [formValues]);
+
   return (
     <DFormContext.Provider
       value={{
@@ -23,7 +26,8 @@ export const DForm = (props: any) => {
         setValue
       }}
     >
+      <h2>{title}</h2>
       {children}
     </DFormContext.Provider>
-  )
-}
+  );
+})
